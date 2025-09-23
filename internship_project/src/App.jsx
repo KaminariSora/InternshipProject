@@ -5,7 +5,6 @@ import Home from './Components/Home';
 function App() {
   return (
     <div className='container'>
-      {/* <FormInput/> */}
       <Home/>
     </div>
   );

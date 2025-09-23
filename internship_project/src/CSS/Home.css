@@ -2,7 +2,7 @@
     width: 100dvw;
     height: 100dvh;
     display: grid;
-    grid-template-rows: auto 1fr auto; 
+    grid-template-rows: 1fr auto; 
     box-sizing: border-box;
     position: relative;
     background-color: antiquewhite;
@@ -10,18 +10,39 @@
 
 .home-container {
     display: grid;
-    grid-template-columns: 20% auto 1fr;
+    grid-template-columns: 20% auto;
     position: relative;
 }
 
 .home-container .section {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    justify-content: start;
     border: 1px solid black;
 }
 
+.logo {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    max-width: 100%;
+    padding: 10px;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.logo img {
+    width: 30%;
+    height: auto;
+    margin: 0px 10% 0 0;
+}
+
+.logo div {
+    display: flex;
+    flex-direction: column;
+}
+
 #section-1 ul{
-    width: 100%;
     padding: 10px 0px 0 0;
     margin:0 10px 0 10px;
     list-style: none;
@@ -29,6 +50,7 @@
 
 #section-1 li {
     padding: 10px 15px 10px 15px;
+    margin: 0 0 10px 0;
 }
 
 #section-1 li:hover {
@@ -43,4 +65,23 @@
     border-radius: 10px;
     color: #fff;
     background-color: orange;
+}
+
+#section-2 {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    margin: 10px;
+    border: 1px solid red;
+}
+
+#section-2 .header {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+#section-2 .header h1,
+#section-2 .header p {
+    margin: 0;
+    padding: 0;
+    flex-wrap: nowrap;
 }

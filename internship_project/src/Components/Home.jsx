@@ -1,4 +1,5 @@
 import '../CSS/Home.css'
+import ChatSection from './ChatSection';
 
 const Home = () => {
     return (
@@ -20,10 +21,7 @@ const Home = () => {
                     </ul>
                 </div>
                 <div className="section" id='section-2'>
-                    <div className='header'>
-                        <h1>AI chat</h1>
-                        <p>เจอแต่บัควุ้ย นอยๆๆๆ</p>
-                    </div>
+                    <ChatSection/>
                 </div>
             </div>
         </div>

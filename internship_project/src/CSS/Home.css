@@ -1,16 +1,20 @@
+* {
+    box-sizing: border-box;
+}
+
 .page {
     width: 100dvw;
     height: 100dvh;
-    display: grid;
-    grid-template-rows: 1fr auto; 
+    display: flex;
+    /* grid-template-rows: 1fr auto;  */
     box-sizing: border-box;
     position: relative;
     background-color: antiquewhite;
 }
 
 .home-container {
-    display: grid;
-    grid-template-columns: 20% auto;
+    display: flex;
+    width: 100%;
     position: relative;
 }
 
@@ -56,6 +60,7 @@
     background-color: greenyellow;
     color: #333;
     border-radius: 10px;
+    cursor: pointer;
 }
 
 #section-1 li.selected {
@@ -69,6 +74,7 @@
 #section-2 {
     display: flex;
     height: 100%;
+    max-height: 100dvh;
     width: 100%;
     overflow: hidden;
 }

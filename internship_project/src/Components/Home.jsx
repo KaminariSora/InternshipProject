@@ -1,9 +1,11 @@
 import '../CSS/Home.css'
 import { useState } from 'react'
 import ChatSection from './ChatSection';
+import ERCSection from './ERCSection';
+import OCRSection from './OCRSection';
 
 const Home = () => {
-    const [visibleSection, setVisibleSection] = useState('');
+    const [visibleSection, setVisibleSection] = useState('chat');
 
     return (
         <div className='page'>
@@ -41,8 +43,8 @@ const Home = () => {
 
                 <div className="section" id='section-2'>
                     {visibleSection === 'chat' && <ChatSection />}
-                    {visibleSection === 'fullTextSeacrh' && <div>Full Text Search Content</div>}
-                    {visibleSection === 'ocr' && <div>OCR Content</div>}
+                    {visibleSection === 'fullTextSeacrh' && <ERCSection/>}
+                    {visibleSection === 'ocr' && <OCRSection/>}
                 </div>
             </div>
         </div>

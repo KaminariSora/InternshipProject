@@ -1,0 +1,27 @@
+.ocr-body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.ocr-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    line-height: 2rem;
+    font-size: .95rem;
+}
+
+.ocr-center h1,
+.ocr-center p {
+    margin: 0;
+    padding: 0;
+}
+
+.ocr-center button {
+    margin: 12px 0 0 0;
+}

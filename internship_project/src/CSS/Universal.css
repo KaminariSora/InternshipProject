@@ -1,0 +1,31 @@
+.content-container {
+    flex: 1;
+    height: 100%;
+    background-color: aliceblue;
+    position: relative;
+}
+
+.content-container .content-header {
+    display: flex;
+    padding: 15px 22px;
+    align-items: start;
+    flex-direction: column;
+    color: #fff;
+    background: orange;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.content-header h1,
+.content-header p {
+    margin: 0;
+    padding: 0;
+    font-size: .95rem;
+}
+
+.gif {
+    position: absolute;
+    height: 200px;
+    width: 200px;
+    right: 0%;
+    bottom: 0;
+}

@@ -116,12 +116,12 @@ const ChatSection = () => {
 
             <div className="chat-body" ref={chatBodyRef}>
                 {messages.map((m, i) => (
-                    <div
+                    <pre
                         key={m.id ?? i}
                         className={`message ${m.role === "user" ? "user-message" : "bot-message"}`}
                     >
                         <p className="message-text">{m.text}</p>
-                    </div>
+                    </pre>
                 ))}
             </div>
 

@@ -41,11 +41,23 @@ const Home = () => {
                     </ul>
                 </div>
 
-                <div className="section" id='section-2'>
-                    {visibleSection === 'chat' && <ChatSection />}
-                    {visibleSection === 'fullTextSeacrh' && <ERCSection/>}
-                    {visibleSection === 'ocr' && <OCRSection/>}
+                <div className="section" id='section-2' style={{ display: visibleSection === 'chat' ? 'block' : 'none' }}>
+                    <ChatSection />
                 </div>
+                <div className="section" id='section-2' style={{ display: visibleSection === 'fullTextSeacrh' ? 'block' : 'none' }}>
+                    <ERCSection />
+                </div>
+                <div className="section" id='section-2' style={{ display: visibleSection === 'ocr' ? 'block' : 'none' }}>
+                    <OCRSection />
+                </div>
+                {/* <div className="section" id="section-2">
+                    <div className="section" id='section-2'>
+                        {visibleSection === 'chat' && <ChatSection />}
+                        {visibleSection === 'fullTextSeacrh' && <ERCSection/>}
+                        {visibleSection === 'ocr' && <OCRSection/>}
+                    </div>
+                </div> */}
+
             </div>
         </div>
     )

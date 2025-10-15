@@ -25,3 +25,23 @@
 .ocr-center button {
     margin: 12px 0 0 0;
 }
+
+.ocr-result {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-y: scroll;
+    width: 100%;
+    white-space: pre-wrap;
+}
+
+.ocr-result pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    /* line-height: 1.5; */
+    max-height: 400px;
+    overflow-y: auto;
+}

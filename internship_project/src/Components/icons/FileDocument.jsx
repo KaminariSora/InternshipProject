@@ -2,10 +2,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile } from "@fortawesome/free-solid-svg-icons";
 
 
-const FileDocument = () => {
+const FileDocument = ({size}) => {
     return (
         <FontAwesomeIcon icon={faFile} 
-        size="lg"/>
+        size={size}/>
     );
 };
 

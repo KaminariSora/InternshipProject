@@ -1,7 +1,33 @@
+:root {
+    --font-color: #fff;
+    --background: #333;
+    --navbar-color: #1a1c1e;
+    --highlight-navbar-color: #242424;
+    --hover-highlight-navbar-color: #303030;
+}
+
+::-webkit-scrollbar {
+  width: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: gray;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--font-color);
+}
+
 .content-container {
     flex: 1;
     height: 100%;
-    background-color: aliceblue;
+    background-color: var(--background);
     position: relative;
 }
 
@@ -11,7 +37,7 @@
     align-items: start;
     flex-direction: column;
     color: #fff;
-    background: orange;
+    background: var(--navbar-color);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 

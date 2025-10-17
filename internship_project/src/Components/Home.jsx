@@ -1,4 +1,5 @@
 import '../CSS/Home.css'
+import '../CSS/Universal.css'
 import { useState } from 'react'
 import ChatSection from './ChatSection';
 import ERCSection from './ERCSection';

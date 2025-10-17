@@ -10,13 +10,11 @@ const STORAGE_KEY = "chat_history_v1"; // <- เปลี่ยน key ได้
 const ChatSection = () => {
     const seedMessage = { role: "bot", text: "Hello. Can I help you?" };
 
-    // โหลดประวัติจาก localStorage ครั้งแรกเท่านั้น
     const [messages, setMessages] = useState(() => {
         try {
             const raw = localStorage.getItem(STORAGE_KEY);
             if (!raw) return [seedMessage];
             const parsed = JSON.parse(raw);
-            // กันข้อมูลแปลกๆ
             return Array.isArray(parsed) && parsed.length ? parsed : [seedMessage];
         } catch {
             return [seedMessage];
@@ -28,18 +26,15 @@ const ChatSection = () => {
     const [error, setError] = useState("");
     const chatBodyRef = useRef(null);
 
-    // เลื่อน scroll ลงล่างเมื่อมีข้อความใหม่
     useEffect(() => {
         const el = chatBodyRef.current;
         if (el) el.scrollTop = el.scrollHeight;
     }, [messages]);
 
-    // บันทึกประวัติทุกครั้งที่ messages เปลี่ยน
     useEffect(() => {
         try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
         } catch (e) {
-            // ถ้าเกินโควต้า/โหมด private ฯลฯ จะมาที่นี่
             console.warn("Cannot persist chat:", e);
         }
     }, [messages]);
@@ -48,7 +43,6 @@ const ChatSection = () => {
         setMessages([seedMessage]);
         setError("");
         setStatus("idle");
-        // เคลียร์ storage ด้วย (ไม่ต้องรอ useEffect)
         try { localStorage.removeItem(STORAGE_KEY); } catch { }
     };
 

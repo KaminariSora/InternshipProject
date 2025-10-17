@@ -1,3 +1,5 @@
+@import "../CSS/Universal.css";
+
 .chat-body {
     display: flex;
     flex-direction: column;
@@ -38,8 +40,8 @@
 }
 
 .chat-body .user-message .message-text {
-    color: #fff;
-    background-color: orange;
+    color: var(--font-color);
+    background-color: var(--highlight-navbar-color);
     border-radius: 13px 13px 13px 3px;
 }
 
@@ -49,7 +51,6 @@
     left: 50%;
     transform: translateX(-50%);
     width: 90%;
-    /* background-color: #fff; */
     padding: 15px 22px 20px;
 }
 
@@ -62,7 +63,7 @@
 }
 
 .chat-footer .chat-form:focus-within {
-    outline: 2px solid orange;
+    outline: 2px solid var(--highlight-navbar-color);
 }
 
 .chat-form .message-input {
@@ -89,7 +90,7 @@
     border-radius: 50%;
     flex-shrink: 0;
     margin-right: 6px;
-    background: orange;
+    background: var(--background);
     transition: .2s ease;
 }
 

@@ -4,8 +4,8 @@ import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import "../CSS/Universal.css";
 import "../CSS/ChatSection.css"
 
-const LOCAL_WEBHOOK_URL = "http://localhost:5678/webhook/ReactChat";
-const STORAGE_KEY = "chat_history_v1"; // <- เปลี่ยน key ได้ตามต้องการ
+const LOCAL_WEBHOOK_URL = "http://localhost:5678/webhook-test/ReactChat";
+const STORAGE_KEY = "chat_history_v1";
 
 const ChatSection = () => {
     const seedMessage = { role: "bot", text: "Hello. Can I help you?" };
@@ -103,9 +103,9 @@ const ChatSection = () => {
             <div className="content-header">
                 <h1>AI chat</h1>
                 <p>Internship Project</p>
-                {/* <button className="clear-btn" onClick={clearHistory} disabled={status === "loading"}>
+                <button className="clear-btn" onClick={clearHistory} disabled={status === "loading"}>
                     ล้างประวัติ
-                </button> */}
+                </button>
             </div>
 
             <div className="chat-body" ref={chatBodyRef}>
@@ -115,6 +115,7 @@ const ChatSection = () => {
                         className={`message ${m.role === "user" ? "user-message" : "bot-message"}`}
                     >
                         <p className="message-text">{m.text}</p>
+                        <button className="message-button">copy</button>
                     </pre>
                 ))}
             </div>

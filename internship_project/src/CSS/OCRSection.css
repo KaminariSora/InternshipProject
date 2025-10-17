@@ -1,47 +1,122 @@
+@import "../CSS/Universal.css";
+
 .ocr-body {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
+    align-items: start;
+    justify-content: start;
+    height: 100dvh;
 }
 
-.ocr-center {
+.ocr-bar {
     display: flex;
-    align-items: center;
-    justify-content: center;
+    align-items: start;
+    justify-content: start;
     flex-direction: column;
     margin: 0;
     padding: 0;
-    line-height: 2rem;
+    min-width: 20%;
+    height: 100%;
+    color: var(--font-color);
+    background-color: var(--highlight-navbar-color);
+    padding: 1rem;
+}
+
+.ocr-bar h1,
+.ocr-bar p {
+    margin: 0;
+    padding: 0;
+    font-size: 1rem;
+}
+
+.upload-box {
+    border: 1px dotted white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    padding: 5%;
+    margin-top: 10%;
+}
+
+.ocr-bar .upload-box h1,
+.ocr-bar .upload-box p {
+    margin: 0;
+    padding: 0;
     font-size: .95rem;
 }
 
-.ocr-center h1,
-.ocr-center p {
-    margin: 0;
-    padding: 0;
-}
-
-.ocr-center button {
+.ocr-bar button {
     margin: 12px 0 0 0;
 }
 
 .ocr-result {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow-y: scroll;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     width: 100%;
-    white-space: pre-wrap;
+    height: 100%;
+    overflow-y: auto;
+    background-color: #1e1e1e;
 }
 
-.ocr-result pre {
+.ocr-result .extract-ocr {
+    border-radius: 8px;
+}
+
+.ocr-result .extract-ocr h1 {
+    font-size: 1rem;
+    color: var(--font-color);
+}
+
+.ocr-result .extract-ocr pre {
     white-space: pre-wrap;
     word-wrap: break-word;
     background: #f8f9fa;
     padding: 1rem;
     border-radius: 8px;
-    /* line-height: 1.5; */
-    max-height: 400px;
+    line-height: 1.5;
+    /* max-height: 80dvh; */
     overflow-y: auto;
+}
+
+.pdf-preview {
+    margin-top: 1rem;
+    min-width: 50%;
+    /* height: 85dvh; */
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.pdf-preview__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: .5rem .75rem;
+    background: #1a1a1a;
+    border-bottom: 1px solid #333;
+    gap: .5rem;
+}
+
+.pdf-preview__actions {
+    display: flex;
+    gap: .75rem;
+}
+
+.pdf-preview__actions a,
+.pdf-preview__actions button {
+    font-size: 0.875rem;
+    background: transparent;
+    border: none;
+    color: #85b7ff;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.pdf-frame {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: none;
 }

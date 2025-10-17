@@ -3,7 +3,7 @@ import FileDocument from "./icons/FileDocument";
 import { useEffect, useRef, useState } from "react";
 
 const WEBHOOK_URL = "http://localhost:5678/webhook/OCR";
-const MAX_SIZE = 25 * 1024 * 1024; // 25MB
+const MAX_SIZE = 25 * 1024 * 1024;
 
 export default function OCRSection() {
     const fileInputRef = useRef(null);
@@ -14,6 +14,7 @@ export default function OCRSection() {
     const [pdfName, setPdfName] = useState("");
     const [pdfUrl, setPdfUrl] = useState("");
     const [pdfFile, setPdfFile] = useState(null);
+    const [copied, setCopied] = useState(false)
 
     const openPicker = () => fileInputRef.current?.click();
 
@@ -25,7 +26,6 @@ export default function OCRSection() {
         setOcrResult("");
     };
 
-    // ล้าง blob url ตอน unmount
     useEffect(() => {
         return () => {
             if (pdfUrl) URL.revokeObjectURL(pdfUrl);
@@ -114,7 +114,7 @@ export default function OCRSection() {
                         <h1>Upload a PDF File</h1>
                         <p>Select a PDF file to extract text content</p>
 
-                        <button onClick={openPicker} disabled={status === "uploading"}>
+                        <button onClick={openPicker} disabled={status === "uploading"} className="button">
                             {status === "uploading" ? "Uploading..." : "Choose File"}
                         </button>
 
@@ -129,27 +129,45 @@ export default function OCRSection() {
                     <div className="item1">
                         <h1>{pdfName}</h1>
                         <div className="button-set">
-                            <button>copy text</button>
-                            <button>download</button>
+                            <button className="button" id="copy"
+                                onClick={() => {
+                                    navigator.clipboard.writeText(ocrResult);
+                                    setCopied(true);
+                                    setTimeout(() => setCopied(false), 2000)
+                                }}>Copy Text</button>
+                            <button className="button" id="download"
+                                onClick={() => {
+                                    const blob = new Blob([ocrResult], { type: "text/plain;charset=utf-8" });
+                                    const url = URL.createObjectURL(blob);
+                                    const link = document.createElement("a");
+                                    link.href = url;
+                                    link.download = "ocr_result.txt";
+                                    link.click();
+                                    URL.revokeObjectURL(url);
+                                }}
+                            >Download</button>
                         </div>
                     </div>
                     {pdfUrl && (
                         <div className="pdf-viewer item2">
-                            <h1>PDF Preview</h1>
+                            <div className="pdf-viewer-heading">
+                                <h1>PDF Preview</h1>
+                                <a href={pdfUrl} target="_blank" rel="noreferrer">Open in new tab</a>
+                            </div>
                             <iframe
                                 title="PDF Preview"
                                 src={`${pdfUrl}#toolbar=1&navpanes=0&scrollbar=1&zoom=page-width`}
                             />
-                            <div>
-                                <a href={pdfUrl} target="_blank" rel="noreferrer">Open in new tab</a>
-                            </div>
+
                         </div>
                     )}
 
                     {ocrResult && (
                         <div className="extract-ocr item3">
                             <h1>Extracted Text</h1>
-                            <pre>{ocrResult}</pre>
+                            <div className="ocr-scroll-area">
+                                <pre>{ocrResult}</pre>
+                            </div>
                         </div>
                     )}
                 </div>
@@ -162,6 +180,7 @@ export default function OCRSection() {
                     style={{ display: "none" }}
                 />
             </div>
+            {copied && <div className="toast">Copied to clipboard</div>}
         </div>
     );
 }

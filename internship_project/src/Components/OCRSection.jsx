@@ -1,11 +1,6 @@
 import "../CSS/OCRSection.css";
 import FileDocument from "./icons/FileDocument";
 import { useEffect, useRef, useState } from "react";
-import { Document, Page, pdfjs } from "react-pdf";
-import "react-pdf/dist/Page/AnnotationLayer.css";
-import "react-pdf/dist/Page/TextLayer.css";
-
-pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`;
 
 const WEBHOOK_URL = "http://localhost:5678/webhook/OCR";
 const MAX_SIZE = 25 * 1024 * 1024; // 25MB
@@ -19,7 +14,6 @@ export default function OCRSection() {
     const [pdfName, setPdfName] = useState("");
     const [pdfUrl, setPdfUrl] = useState("");
     const [pdfFile, setPdfFile] = useState(null);
-    const [numPages, setNumPages] = useState(null);
 
     const openPicker = () => fileInputRef.current?.click();
 
@@ -132,25 +126,29 @@ export default function OCRSection() {
                     </div>
                 </div>
                 <div className="ocr-result">
+                    <div className="item1">
+                        <h1>{pdfName}</h1>
+                        <div className="button-set">
+                            <button>copy text</button>
+                            <button>download</button>
+                        </div>
+                    </div>
                     {pdfUrl && (
-                        <div className="pdf-preview">
-                            <div className="pdf-preview__header">
-                                <strong>{pdfName}</strong>
-                            </div>
-
-                            <div className="pdf-viewer">
-                                <Document file={pdfUrl} onLoadSuccess={({ numPages }) => setNumPages(numPages)}>
-                                    {Array.from(new Array(numPages), (el, index) => (
-                                        <Page key={`page_${index + 1}`} pageNumber={index + 1} width={800} />
-                                    ))}
-                                </Document>
+                        <div className="pdf-viewer item2">
+                            <h1>PDF Preview</h1>
+                            <iframe
+                                title="PDF Preview"
+                                src={`${pdfUrl}#toolbar=1&navpanes=0&scrollbar=1&zoom=page-width`}
+                            />
+                            <div>
+                                <a href={pdfUrl} target="_blank" rel="noreferrer">Open in new tab</a>
                             </div>
                         </div>
                     )}
 
                     {ocrResult && (
-                        <div className="extract-ocr">
-                            {/* <h1>Extracted Text</h1> */}
+                        <div className="extract-ocr item3">
+                            <h1>Extracted Text</h1>
                             <pre>{ocrResult}</pre>
                         </div>
                     )}

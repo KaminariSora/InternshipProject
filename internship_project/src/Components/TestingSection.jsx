@@ -5,7 +5,7 @@ const MODELS = [
   { id: "gemini-2.0-pro", label: "Google - Gemini 2.0 Pro" },
 ];
 
-const WEBHOOK_URL = "http://localhost:5678/webhook-test/React";
+const WEBHOOK_URL = "http://localhost:5678/webhook-test/testing";
 
 export default function TestingSection() {
   const [model, setModel] = useState(MODELS[0].id);

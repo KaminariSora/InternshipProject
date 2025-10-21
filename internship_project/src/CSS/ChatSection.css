@@ -1,5 +1,63 @@
 @import "../CSS/Universal.css";
 
+/* ---------- Header set up ---------- */
+
+.header-button {
+    display: inline-flex;
+}
+
+.header-select {
+    width: 100%;
+    max-width: 220px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background-color: var(--background);
+    color: var(--font-color);
+    font-size: 0.95rem;
+    font-family: inherit;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.header-select:hover {
+    border-color: var(--highlight-button-color, #2563eb);
+    background-color: var(--highlight-navbar-color);
+}
+
+.header-select:focus {
+    border-color: var(--highlight-navbar-color, #2563eb);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+.header-select option {
+    background-color: var(--background);
+    color: var(--font-color);
+    font-size: 0.95rem;
+}
+
+.header-select:disabled {
+    background-color: var(--background);
+    color: #9ca3af;
+    cursor: not-allowed;
+}
+
+.clear-btn {
+    width: 100%;
+    max-width: 220px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background-color: var(--background);
+    color: var(--font-color);
+}
+
+.clear-btn:hover {
+    cursor: pointer;
+    background-color: var(--highlight-navbar-color);
+}
+
+/* ---------- Body set up ---------- */
+
 .chat-body {
     display: flex;
     flex-direction: column;
@@ -12,24 +70,19 @@
 
 .content-container .chat-body .message {
     display: flex;
-    gap: 11px;
+    flex-direction: column;
+    text-align: start;
 }
 
-.chat-body .message .message-text {
+.chat-body .message.user-message .message-text {
     padding: 12px 16px;
-    max-width: 75%;
-    background: gray;
+    margin-bottom: 10px;
     word-wrap: break-word;
     white-space: pre-line;
     font-size: 1rem;
 }
 
-.chat-body .bot-message .message-text {
-    background-color: #fff;
-    word-wrap: break-word;
-    white-space: pre-line;
-    border-radius: 13px 13px 13px 3px;
-}
+/* ---------- User message zone ---------- */
 
 .chat-body .user-message {
     flex-direction: column;
@@ -44,6 +97,23 @@
     background-color: var(--highlight-navbar-color);
     border-radius: 13px 13px 13px 3px;
 }
+
+/* ---------- Bot message zone ---------- */
+
+.content-container .chat-body .message .bot {
+    display: inline-flex;
+    width: fit-content;
+}
+
+.bot-message .message-body {
+    background: var(--font-color);
+    width: fit-content;
+    max-width: 75%;
+    padding: 10px 12px;
+    border-radius: 13px 13px 13px 3px;
+}
+
+/* ---------- Footer zone ---------- */
 
 .content-container .chat-footer {
     position: absolute;
@@ -86,7 +156,7 @@
     border: none;
     outline: none;
     cursor: pointer;
-    font-size: 1.1re,;
+    font-size: 1.1re, ;
     border-radius: 50%;
     flex-shrink: 0;
     margin-right: 6px;
@@ -100,4 +170,20 @@
 
 .chat-form .message-input:valid~button {
     display: flex;
+}
+
+/* ---------- Copy Button zone ---------- */
+
+.content-container .chat-body .message .message-button {
+    display: flex;
+    margin: 0;
+    padding: 8px;
+    color: var(--font-color);
+    border: none;
+    background: transparent;
+}
+
+.content-container .chat-body .message .message-button:hover {
+    cursor: pointer;
+    background: var(--highlight-button-color);
 }

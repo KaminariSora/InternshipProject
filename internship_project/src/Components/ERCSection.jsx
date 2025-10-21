@@ -30,8 +30,10 @@ const ERCSection = () => {
     return (
         <div className="content-container">
             <div className="content-header">
-                <h1>Full Text Search</h1>
-                <p>Internship Project</p>
+                <div className="header-name">
+                    <h1>Full Text Search</h1>
+                    <p>Internship Project</p>
+                </div>
             </div>
 
             <div className='erc-body'>

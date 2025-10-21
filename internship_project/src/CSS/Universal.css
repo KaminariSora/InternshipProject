@@ -3,6 +3,7 @@
     --background: #333;
     --navbar-color: #1a1c1e;
     --highlight-navbar-color: #242424;
+    --highlight-button-color: #212121;
     --hover-highlight-navbar-color: #303030;
 }
 
@@ -24,6 +25,10 @@
   background: var(--font-color);
 }
 
+* {
+  font-size: 1rem;
+}
+
 .content-container {
     flex: 1;
     height: 100%;
@@ -34,8 +39,9 @@
 .content-container .content-header {
     display: flex;
     padding: 15px 22px;
-    align-items: start;
-    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
     color: #fff;
     background: var(--navbar-color);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -54,4 +60,18 @@
     width: 200px;
     right: 0%;
     bottom: 0;
+}
+
+ิbutton {
+    width: 100%;
+    max-width: 220px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background-color: var(--background);
+    color: var(--font-color);
+}
+
+ิbutton:hover {
+    cursor: pointer;
+    background-color: var(--highlight-navbar-color);
 }

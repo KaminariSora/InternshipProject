@@ -28,10 +28,16 @@
     font-size: 1rem;
 }
 
+.button-set {
+    display: flex;
+}
+
 .button {
-    border: none;
+    width: 100%;
+    max-width: 220px;
+    padding: 10px 12px;
     border-radius: 8px;
-    background-color: var(--navbar-color);
+    background-color: var(--background);
     color: var(--font-color);
     transition: all 0.2s ease;
 }
@@ -39,7 +45,7 @@
 .button:hover {
     border: var(--font-color);
     background: var(--hover-highlight-navbar-color);
-    transform: scale(1.1);
+    transform: scale(1.05);
     animation: .2s ease;
     cursor: pointer;
 }

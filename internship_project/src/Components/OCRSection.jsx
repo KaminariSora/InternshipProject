@@ -100,8 +100,10 @@ export default function OCRSection() {
     return (
         <div className="content-container">
             <div className="content-header">
-                <h1>OCR</h1>
-                <p>Internship Project</p>
+                <div className="header-name">
+                    <h1>OCR</h1>
+                    <p>Internship Project</p>
+                </div>
             </div>
 
             <div className="ocr-body">
@@ -134,7 +136,9 @@ export default function OCRSection() {
                                     navigator.clipboard.writeText(ocrResult);
                                     setCopied(true);
                                     setTimeout(() => setCopied(false), 2000)
-                                }}>Copy Text</button>
+                                }}
+                                disabled={status === "uploading"}
+                            >Copy Text</button>
                             <button className="button" id="download"
                                 onClick={() => {
                                     const blob = new Blob([ocrResult], { type: "text/plain;charset=utf-8" });
@@ -145,6 +149,7 @@ export default function OCRSection() {
                                     link.click();
                                     URL.revokeObjectURL(url);
                                 }}
+                                disabled={status === "uploading"}
                             >Download</button>
                         </div>
                     </div>

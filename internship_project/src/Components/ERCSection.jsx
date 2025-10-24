@@ -3,8 +3,43 @@ import { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 
+const WEBHOOK_URL = "http://localhost:5678/webhook-test/ERC"
+
 const ERCSection = () => {
     const [searchText, setSearchText] = useState('')
+
+    async function fetchAndOpenBinary() {
+        const res = await fetch(WEBHOOK_URL, {
+            method: "POST",                       // หรือ GET ตามที่ตั้ง
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query: "คำค้น/พารามิเตอร์" }),
+        });
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+        // ดึงชื่อไฟล์จาก header ถ้ามี
+        const cd = res.headers.get("Content-Disposition"); // e.g. inline; filename="foo.pdf"
+        const suggestedName = (cd && /filename\*=UTF-8''([^;]+)|filename="([^"]+)"/i.exec(cd)?.[1] || cd && /filename="([^"]+)"/i.exec(cd)?.[1]) || "file.pdf";
+
+        const blob = await res.blob(); // ได้ไฟล์จริง
+        const url = URL.createObjectURL(blob);
+
+        // 1) เปิดในแท็บใหม่ (เหมาะกับ PDF, รูป)
+        window.open(url, "_blank", "noopener,noreferrer");
+
+        // หรือ 2) บังคับดาวน์โหลด
+        // const a = document.createElement("a");
+        // a.href = url;
+        // a.download = suggestedName;
+        // document.body.appendChild(a);
+        // a.click();
+        // a.remove();
+
+        // ล้าง URL ชั่วคราวเมื่อไม่ใช้
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
+    }
+
+
     const handleSubmit = (e) => {
         e.preventDefault()
         console.log(searchText)
@@ -53,6 +88,9 @@ const ERCSection = () => {
                             <FontAwesomeIcon icon={faPaperPlane} size="lg" />
                         </button>
                     </form>
+                    <button onClick={fetchAndOpenBinary}>
+                        เปิดไฟล์/ดาวน์โหลด
+                    </button>
                 </div>
             </div>
 

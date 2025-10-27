@@ -77,15 +77,18 @@
     flex: 1;
     min-height: 0;
     flex-direction: column;
+    align-items: center;
     overflow-y: auto;
-    max-width: 70%;
+    max-width: 100%;
     padding-bottom: 4rem;
     position: relative;
 }
 
 .output-container .status {
     position: sticky;
+    width: 70%;
     top: 0;
+    left: 0;
     z-index: 1;
     line-height: 2rem !important;
     background: rgba(var(--background-rgb), 0.5);
@@ -99,7 +102,7 @@
     padding: 20px;
     margin-top: 20px;
     text-align: start;
-    width: 100%;
+    width: 70%;
     display: inline-block;
     position: relative;
 }
@@ -108,14 +111,12 @@
     margin: 0;
     padding: 0;
     font-size: 1.5rem;
-    color: var(--background);
 }
 
 .card .card-content {
     margin: 0;
     padding: 0;
     font-size: .95rem;
-    color: var(--background);
     text-overflow: ellipsis;
 }
 
@@ -133,4 +134,25 @@
     right: 0;
     top: 0;
     transform: translate(-50%, 50%);
+}
+
+.card:hover {
+    cursor: pointer;    
+    transform: scale(1.01);
+    background: var(--navbar-color);
+    color: #fff;
+    border-radius: 10px;
+    box-shadow: 5px 5px 5px var(--hover-highlight-navbar-color);
+    animation: card-hover 0.5s ease;
+}
+
+@keyframes card-hover {
+    0% {
+        background: var(--font-color);
+        color: var(--background);
+    }   
+    100% {
+        background: var(--navbar-color);
+        color: var(--font-color);
+    }
 }

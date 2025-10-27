@@ -1,10 +1,11 @@
 :root {
-    --font-color: #fff;
-    --background: #333;
-    --navbar-color: #1a1c1e;
-    --highlight-navbar-color: #242424;
-    --highlight-button-color: #212121;
-    --hover-highlight-navbar-color: #303030;
+  --font-color: #fff;
+  --background: #333333;
+  --background-rgb: 51, 51, 51;
+  --navbar-color: #1a1c1e;
+  --highlight-navbar-color: #242424;
+  --highlight-button-color: #212121;
+  --hover-highlight-navbar-color: #303030;
 }
 
 ::-webkit-scrollbar {
@@ -30,48 +31,48 @@
 }
 
 .content-container {
-    flex: 1;
-    height: 100%;
-    background-color: var(--background);
-    position: relative;
+  flex: 1;
+  height: 100%;
+  background-color: var(--background);
+  position: relative;
 }
 
 .content-container .content-header {
-    display: flex;
-    padding: 15px 22px;
-    align-items: center;
-    justify-content: space-between;
-    flex-direction: row;
-    color: #fff;
-    background: var(--navbar-color);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  display: flex;
+  padding: 15px 22px;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row;
+  color: #fff;
+  background: var(--navbar-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .content-header h1,
 .content-header p {
-    margin: 0;
-    padding: 0;
-    font-size: .95rem;
+  margin: 0;
+  padding: 0;
+  font-size: .95rem;
 }
 
 .gif {
-    position: absolute;
-    height: 200px;
-    width: 200px;
-    right: 0%;
-    bottom: 0;
+  position: absolute;
+  height: 200px;
+  width: 200px;
+  right: 0%;
+  bottom: 0;
 }
 
 ิbutton {
-    width: 100%;
-    max-width: 220px;
-    padding: 10px 12px;
-    border-radius: 8px;
-    background-color: var(--background);
-    color: var(--font-color);
+  width: 100%;
+  max-width: 220px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background-color: var(--background);
+  color: var(--font-color);
 }
 
 ิbutton:hover {
-    cursor: pointer;
-    background-color: var(--highlight-navbar-color);
+  cursor: pointer;
+  background-color: var(--highlight-navbar-color);
 }

@@ -4,7 +4,6 @@ import { useState } from 'react'
 import ChatSection from './ChatSection';
 import ERCSection from './ERCSection';
 import OCRSection from './OCRSection';
-import TestingSection from './TestingSection';
 
 const Home = () => {
     const [visibleSection, setVisibleSection] = useState('chat');
@@ -40,12 +39,6 @@ const Home = () => {
                         >
                             OCR
                         </li>
-                        {/* <li
-                            className={visibleSection === 'testing' ? 'selected' : ''}
-                            onClick={() => setVisibleSection('testing')}
-                        >
-                            Testing
-                        </li> */}
                     </ul>
                 </div>
 
@@ -58,9 +51,6 @@ const Home = () => {
                 <div className="section" id='section-2' style={{ display: visibleSection === 'ocr' ? 'block' : 'none' }}>
                     <OCRSection />
                 </div>
-                {/* <div className="section" id='section-2' style={{ display: visibleSection === 'testing' ? 'block' : 'none' }}>
-                    <TestingSection />
-                </div> */}
             </div>
         </div>
     )

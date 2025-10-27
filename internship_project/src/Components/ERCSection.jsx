@@ -2,65 +2,68 @@ import '../CSS/ERCSection.css'
 import { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
+import FileDocument from './icons/FileDocument';
+import DownloadIcon from './icons/DownloadIcon';
 
-const WEBHOOK_URL = "http://localhost:5678/webhook-test/ERC"
+const WEBHOOK_URL = "http://localhost:5678/webhook/ERC"
 
 const ERCSection = () => {
     const [searchText, setSearchText] = useState('')
+    const [status, setStatus] = useState("idle");
+    const [error, setError] = useState("");
+    const [filesContent, setFilesCotent] = useState([])
 
-    async function fetchAndOpenBinary() {
-        const res = await fetch(WEBHOOK_URL, {
-            method: "POST",                       // หรือ GET ตามที่ตั้ง
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ query: "คำค้น/พารามิเตอร์" }),
-        });
-
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-        // ดึงชื่อไฟล์จาก header ถ้ามี
-        const cd = res.headers.get("Content-Disposition"); // e.g. inline; filename="foo.pdf"
-        const suggestedName = (cd && /filename\*=UTF-8''([^;]+)|filename="([^"]+)"/i.exec(cd)?.[1] || cd && /filename="([^"]+)"/i.exec(cd)?.[1]) || "file.pdf";
-
-        const blob = await res.blob(); // ได้ไฟล์จริง
-        const url = URL.createObjectURL(blob);
-
-        // 1) เปิดในแท็บใหม่ (เหมาะกับ PDF, รูป)
-        window.open(url, "_blank", "noopener,noreferrer");
-
-        // หรือ 2) บังคับดาวน์โหลด
-        // const a = document.createElement("a");
-        // a.href = url;
-        // a.download = suggestedName;
-        // document.body.appendChild(a);
-        // a.click();
-        // a.remove();
-
-        // ล้าง URL ชั่วคราวเมื่อไม่ใช้
-        setTimeout(() => URL.revokeObjectURL(url), 5000);
-    }
-
-
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
         console.log(searchText)
-    }
-    // Evernight GIF
-    useEffect(() => {
-        const oldScript = document.querySelector('script[src="https://tenor.com/embed.js"]');
-        if (oldScript) oldScript.remove();
-
-        const script = document.createElement('script');
-        script.src = 'https://tenor.com/embed.js';
-        script.async = true;
-        document.body.appendChild(script);
-
-        return () => {
-            if (script.parentNode) {
-                script.parentNode.removeChild(script);
+        try {
+            setStatus("loading")
+            const res = await fetch(WEBHOOK_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    searchText,
+                }),
+            })
+            if (!res.ok) {
+                setStatus("error")
+                console.error(`HTTP Error: ${res.status}`);
+                const errText = await res.text();
+                console.log("Response text:", errText);
+                setError(`Server error: ${res.status}`);
+                return;
             }
-        };
-    }, []);
-    // ----------------------------------------------
+            const data = await res.json();
+            console.log(data)
+
+            const files = Array.isArray(data)
+                ? data.map(item => ({
+                    path: item.directory,
+                    name: item.fileName,
+                    size: item.fileSize,
+                    status: item.found ? "พบไฟล์" : "ไม่พบไฟล์",
+                    seq: item.meeting_seq,
+                    summary: Array.isArray(item.summaries) ? item.summaries.join("\n\n") : ""
+                }))
+                : [];
+            setFilesCotent(files)
+            setStatus("success")
+        } catch (err) {
+            const msg = err?.message || "Unknown error";
+            setError(msg);
+        }
+    }
+
+    const handleDownloadClick = (filePath, fileName) => {
+        if (!filePath) return;
+        const rootUrl = `http://localhost:5678/webhook/download?path=`
+        const url = `${rootUrl}${encodeURIComponent(filePath)}/${fileName}`;
+        const a = document.createElement("a");
+        a.href = url;
+        a.target = "_blank"
+        a.rel = "noopener noreferrer";
+        a.click();
+    };
 
     return (
         <div className="content-container">
@@ -72,8 +75,8 @@ const ERCSection = () => {
             </div>
 
             <div className='erc-body'>
-                <h1>ERC Document Search</h1>
-                <p>Search through regulations, policies and official documents</p>
+                <h1 className='heading'>ERC Document Search</h1>
+                <p className='heading'>Search through regulations, policies and official documents</p>
                 <div className='erc-input'>
                     <form className="input-form" onSubmit={handleSubmit}>
                         <input
@@ -83,30 +86,29 @@ const ERCSection = () => {
                             required
                             value={searchText}
                             onChange={(e) => setSearchText(e.target.value)}
+                            disabled={status=="loading"}
                         />
                         <button type="submit" aria-label="Send">
                             <FontAwesomeIcon icon={faPaperPlane} size="lg" />
                         </button>
                     </form>
-                    <button onClick={fetchAndOpenBinary}>
-                        เปิดไฟล์/ดาวน์โหลด
-                    </button>
                 </div>
-            </div>
-
-            <div className='gif'>
-                <div
-                    className="tenor-gif-embed"
-                    data-postid="8150170169450611599"
-                    data-share-method="host"
-                    data-aspect-ratio="1.08844"
-                    data-width="100%"
-                >
-                    <a href="https://tenor.com/view/evernight-march-7th-hsr-gif-12239487481756178879">
-                        Everknight Evernight GIF
-                    </a>
-                    from{" "}
-                    <a href="https://tenor.com/search/everknight-gifs">Everknight GIFs</a>
+                <div className='output-container'>
+                    {status === "loading" && <p className='status' style={{ color: "white" }}>Please wait</p>}
+                    {status === "idle" && <p className='status' style={{ color: "white" }}>Input searching keywords</p>}
+                    {status === "success" && <p className='status' style={{ color: "white" }}>Result</p>}
+                    {status === "error" && <p className='status' style={{ color: "red" }}>Error</p>}
+                    {filesContent.map((f, i) => (
+                        <div key={i} className='card'>
+                            <button className='card-download'
+                                onClick={() => handleDownloadClick(f.path, f.name)}
+                                disabled={!f.path}><DownloadIcon size="1x" /></button>
+                            <p className='card-title'><FileDocument size="1x" />{f.name}</p>
+                            <p className='card-summary'>{f.summary}</p>
+                            {/* <p className='card-content'>Path: {f.path}</p> */}
+                            <p className='card-content'>Size: {f.size}</p>
+                        </div>
+                    ))}
                 </div>
             </div>
         </div>

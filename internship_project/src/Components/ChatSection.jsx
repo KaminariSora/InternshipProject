@@ -7,7 +7,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import DOMPurify from "dompurify";
 
-const LOCAL_WEBHOOK_URL = "http://localhost:5678/webhook-test/ReactChat";
+const LOCAL_WEBHOOK_URL = "http://localhost:5678/webhook/ReactChat";
 const STORAGE_KEY = "chat_history_v1";
 const MODELS = [{
     id: "gemini 1.5-flash",

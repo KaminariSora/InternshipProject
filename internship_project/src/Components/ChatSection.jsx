@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPaperPlane, faCopy } from "@fortawesome/free-solid-svg-icons";
+import { faPaperPlane, faCopy, faEllipsis } from "@fortawesome/free-solid-svg-icons";
 import "../CSS/Universal.css";
 import "../CSS/ChatSection.css";
 import ReactMarkdown from "react-markdown";
@@ -49,7 +49,9 @@ const ChatSection = () => {
     const [status, setStatus] = useState("idle");
     const [error, setError] = useState("");
     const [clearComfirm, setClearConfirm] = useState(false);
+    const [openFormId, setOpenFormId] = useState(null);
     const chatBodyRef = useRef(null);
+    const historyButtonRef = useRef(null)
 
     useEffect(() => {
         const el = chatBodyRef.current;
@@ -82,6 +84,16 @@ const ChatSection = () => {
         );
         setClearConfirm(false);
     };
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (historyButtonRef.current && !historyButtonRef.current.contains(event.target)) {
+                setOpenFormId(null);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -209,22 +221,38 @@ const ChatSection = () => {
                     <button className="new-chat-btn" onClick={createNewChat}>
                         + New Chat
                     </button>
-                    <ul>
+                    <ul className="history-list">
                         {conversations.map((conv) => (
-                            <li key={conv.id} className={conv.id === activeId ? "active" : ""}>
-                                <span onClick={() => setActiveId(conv.id)}>{conv.title}</span>
+                            <li
+                                key={conv.id}
+                                className={conv.id === activeId ? "active selected" : ""}
+                                onClick={() => setActiveId(conv.id)}>
+                                <span>{conv.title}</span>
                                 <button
-                                    className="delete-btn"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        setConversations((prev) => prev.filter((c) => c.id !== conv.id));
-                                        if (conv.id === activeId && conversations.length > 1) {
-                                            setActiveId(conversations[0].id);
-                                        }
-                                    }}
+                                    className="selection-btn"
+                                    onClick={() => setOpenFormId(prev => prev === conv.id ? null : conv.id)}
                                 >
-                                    🗑
+                                    <FontAwesomeIcon icon={faEllipsis} />
                                 </button>
+                                {openFormId === conv.id && (
+                                    <div
+                                        ref={historyButtonRef}
+                                        className="selectionForm"
+                                    >
+                                        <li
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setConversations((prev) => prev.filter((c) => c.id !== conv.id));
+                                                if (conv.id === activeId && conversations.length > 1) {
+                                                    setActiveId(conversations[0].id);
+                                                }
+                                            }}
+                                        >Delete Chat</li>
+                                        <li
+                                            onClick={() => { setOpenFormId(null) }}
+                                        >Do nothing</li>
+                                    </div>
+                                )}
                             </li>
                         ))}
                     </ul>

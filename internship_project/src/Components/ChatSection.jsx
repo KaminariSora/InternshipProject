@@ -2,126 +2,177 @@ import { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperPlane, faCopy } from "@fortawesome/free-solid-svg-icons";
 import "../CSS/Universal.css";
-import "../CSS/ChatSection.css"
+import "../CSS/ChatSection.css";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import DOMPurify from "dompurify";
 
 const LOCAL_WEBHOOK_URL = "http://localhost:5678/webhook/ReactChat";
-const STORAGE_KEY = "chat_history_v1";
-const MODELS = [{
-    id: "gemini 1.5-flash",
-    label: "Gemini 1.5-flash"
-},
-{
-    id: "gemini 1.5-pro",
-    label: "Gemini 1.5-pro"
-},
-{
-    id: "gemini 2.5-pro",
-    label: "Gemini 2.5-pro"
-}
-]
+const STORAGE_KEY = "chat_conversations_v1";
+
+const MODELS = [
+    { id: "gemini 1.5-flash", label: "Gemini 1.5-flash" },
+    { id: "gemini 1.5-pro", label: "Gemini 1.5-pro" },
+    { id: "gemini 2.5-pro", label: "Gemini 2.5-pro" },
+];
+
+const makeId = () =>
+    Date.now().toString() + Math.random().toString(16).slice(2);
 
 const ChatSection = () => {
-    const seedMessage = { role: "bot", text: "Hello. Can I help you?" };
-    const [model, setModel] = useState(MODELS[2].id)
-
-    const [messages, setMessages] = useState(() => {
+    const [conversations, setConversations] = useState(() => {
         try {
             const raw = localStorage.getItem(STORAGE_KEY);
-            if (!raw) return [seedMessage];
-            const parsed = JSON.parse(raw);
-            return Array.isArray(parsed) && parsed.length ? parsed : [seedMessage];
-        } catch {
-            return [seedMessage];
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                if (Array.isArray(parsed) && parsed.length) return parsed;
+            }
+        } catch (e) {
+            console.warn("Cannot load conversations:", e);
         }
+        return [
+            {
+                id: makeId(),
+                title: "New chat",
+                messages: [
+                    { id: makeId(), role: "bot", text: "Hello. Can I help you?" },
+                ],
+            },
+        ];
     });
 
+    const [activeId, setActiveId] = useState("c1");
+    const activeConversation = conversations.find((c) => c.id === activeId);
+
+    const [model, setModel] = useState(MODELS[2].id);
     const [userMessage, setUserMessage] = useState("");
     const [status, setStatus] = useState("idle");
     const [error, setError] = useState("");
+    const [clearComfirm, setClearConfirm] = useState(false);
     const chatBodyRef = useRef(null);
 
     useEffect(() => {
         const el = chatBodyRef.current;
         if (el) el.scrollTop = el.scrollHeight;
-    }, [messages]);
+    }, [conversations]);
 
     useEffect(() => {
         try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(conversations));
         } catch (e) {
-            console.warn("Cannot persist chat:", e);
+            console.warn("Cannot persist conversations:", e);
         }
-    }, [messages]);
+    }, [conversations]);
 
-    const clearHistory = () => {
-        setMessages([seedMessage]);
-        setError("");
-        setStatus("idle");
-        try { localStorage.removeItem(STORAGE_KEY); } catch { }
+    const openClearHistoryWindow = () => {
+        setClearConfirm(true);
+    };
+
+    const handleConfirmClearHistory = () => {
+        setConversations((prev) =>
+            prev.map((conv) => {
+                if (conv.id !== activeId) return conv;
+                return {
+                    ...conv,
+                    messages: [
+                        { id: makeId(), role: "bot", text: "Hello. Can I help you?" },
+                    ],
+                };
+            })
+        );
+        setClearConfirm(false);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         const text = userMessage.trim();
-        if (!text || status === "loading") return;
+        if (!text || status === "loading" || !activeConversation) return;
 
-        setMessages((prev) => [...prev, { role: "user", text }]);
-        setUserMessage("");
         setStatus("loading");
         setError("");
+        setUserMessage("");
 
-        const loadingId = Date.now();
-        setMessages((prev) => [
-            ...prev,
-            { id: loadingId, role: "bot", text: `thinking with ${model}...` },
-        ]);
+        const userId = makeId();
+        const loadingId = makeId();
+
+        setConversations((prev) =>
+            prev.map((conv) => {
+                if (conv.id !== activeId) return conv;
+                return {
+                    ...conv,
+                    messages: [
+                        ...conv.messages,
+                        { id: userId, role: "user", text },
+                        { id: loadingId, role: "bot", text: `thinking with ${model}...` },
+                    ],
+                };
+            })
+        );
 
         try {
             const r = await fetch(LOCAL_WEBHOOK_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    text,
-                    model: model
-                }),
+                body: JSON.stringify({ text, model }),
             });
 
             const ctype = r.headers.get("content-type") || "";
             let data;
-            if (ctype.includes("application/json")) {
-                data = await r.json();
-            } else {
-                data = { message: await r.text() };
-            }
+            if (ctype.includes("application/json")) data = await r.json();
+            else data = { message: await r.text() };
 
             if (!r.ok) throw new Error(data?.message || `HTTP ${r.status}`);
 
             const reply =
                 data?.message ?? data?.answer ?? data?.output ?? JSON.stringify(data);
 
-            setMessages((prev) =>
-                prev.map((m) => (m.id === loadingId ? { ...m, text: String(reply) } : m))
+            setConversations((prev) =>
+                prev.map((conv) => {
+                    if (conv.id !== activeId) return conv;
+                    return {
+                        ...conv,
+                        messages: conv.messages.map((m) =>
+                            m.id === loadingId ? { ...m, text: String(reply) } : m
+                        ),
+                    };
+                })
             );
+
             setStatus("success");
         } catch (err) {
             const msg = err?.message || "Unknown error";
             setError(msg);
-            setMessages((prev) =>
-                prev.map((m) =>
-                    m.id === loadingId ? { ...m, text: `ขอโทษนะ มีปัญหา: ${msg}` } : m
-                )
+            setConversations((prev) =>
+                prev.map((conv) => {
+                    if (conv.id !== activeId) return conv;
+                    return {
+                        ...conv,
+                        messages: conv.messages.map((m) =>
+                            m.id === loadingId
+                                ? { ...m, text: `ขอโทษนะ มีปัญหา: ${msg}` }
+                                : m
+                        ),
+                    };
+                })
             );
             setStatus("error");
         }
     };
 
-    const enhance = (md = "") =>
-        md.replace(/\*\*มติ:\*\*/g, "**มติ:**");
-
+    const enhance = (md = "") => md.replace(/\*\*มติ:\*\*/g, "**มติ:**");
     const sanitize = (md = "") => DOMPurify.sanitize(md);
+
+    const createNewChat = () => {
+        const newChat = {
+            id: "c" + makeId(),
+            title: "Testing",
+            messages: [
+                { id: makeId(), role: "bot", text: "Hello. Can I help you?" },
+            ],
+        };
+        setConversations((prev) => [newChat, ...prev]);
+        setActiveId(newChat.id);
+    };
 
     return (
         <div className="content-container">
@@ -135,89 +186,146 @@ const ChatSection = () => {
                         className="border rounded px-2 py-1 header-select"
                         value={model}
                         onChange={(e) => setModel(e.target.value)}
-                        title="เลือกโมเดลสำหรับคำตอบ"
+                        title="Choose model to answer."
                     >
                         {MODELS.map((m) => (
-                            <option key={m.id} value={m.id}>{m.label}</option>
+                            <option key={m.id} value={m.id}>
+                                {m.label}
+                            </option>
                         ))}
                     </select>
-                    <button className="clear-btn" onClick={clearHistory} disabled={status === "loading"}>
+                    <button
+                        className="clear-btn"
+                        onClick={openClearHistoryWindow}
+                        disabled={status === "loading"}
+                    >
                         Clear History
                     </button>
                 </div>
             </div>
 
-            <div className="chat-body" ref={chatBodyRef}>
-                {messages.map((m, i) => (
-                    <div
-                        key={m.id ?? i}
-                        className={`message ${m.role === "user" ? "user-message" : "bot-message"}`}
-                    >
-                        <div className="message-body">
-                            <ReactMarkdown
-                                remarkPlugins={[remarkGfm]}
-                                components={{
-                                    p: ({ children, className }) => (
-                                        <p className={`message-text ${className ?? ""}`}>{children}</p>
-                                    ),
-                                    strong: ({ children, className }) => (
-                                        <strong className={`font-semibold ${className ?? ""}`}>{children}</strong>
-                                    ),
-                                    ol: ({ children, className }) => (
-                                        <ol className={`list-decimal ml-6 my-2 ${className ?? ""}`}>{children}</ol>
-                                    ),
-                                    ul: ({ children, className }) => (
-                                        <ul className={`list-disc ml-6 my-2 ${className ?? ""}`}>{children}</ul>
-                                    ),
-                                    li: ({ children, className }) => (
-                                        <li className={`my-1 ${className ?? ""}`}>{children}</li>
-                                    ),
-                                    code: ({ inline, children, className }) =>
-                                        inline ? (
-                                            <code className={`px-1 rounded bg-gray-100 ${className ?? ""}`}>{children}</code>
-                                        ) : (
-                                            <pre className="p-3 rounded bg-gray-100 overflow-auto">
-                                                <code className={className}>{children}</code>
-                                            </pre>
-                                        ),
-                                    blockquote: ({ children, className }) => (
-                                        <blockquote className={`border-l-4 pl-3 text-gray-700 italic ${className ?? ""}`}>
-                                            {children}
-                                        </blockquote>
-                                    ),
-                                }}
+            <div className="main-container">
+                <div className="history-box">
+                    <button className="new-chat-btn" onClick={createNewChat}>
+                        + New Chat
+                    </button>
+                    <ul>
+                        {conversations.map((conv) => (
+                            <li key={conv.id} className={conv.id === activeId ? "active" : ""}>
+                                <span onClick={() => setActiveId(conv.id)}>{conv.title}</span>
+                                <button
+                                    className="delete-btn"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setConversations((prev) => prev.filter((c) => c.id !== conv.id));
+                                        if (conv.id === activeId && conversations.length > 1) {
+                                            setActiveId(conversations[0].id);
+                                        }
+                                    }}
+                                >
+                                    🗑
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
 
-                            >
-                                {sanitize(enhance(m.text))}
-                            </ReactMarkdown>
-                        </div>
-
-                        <button
-                            className={`message-button ${m.role === "user" ? "user" : "bot"}`}
-                            onClick={() => {
-                                navigator.clipboard.writeText(m.text ?? "")
-                                    .then(() => {
-                                        const toast = document.createElement("div");
-                                        toast.className = "toast";
-                                        toast.textContent = "Copied to clipboard";
-                                        document.body.appendChild(toast);
-                                        setTimeout(() => toast.remove(), 2000);
-                                    })
-                                    .catch(() => alert("Copy failed"));
-                            }}
-                            title="คัดลอกข้อความ"
+                <div className="chat-body" ref={chatBodyRef}>
+                    {activeConversation?.messages.map((m) => (
+                        <div
+                            key={m.id}
+                            className={`message ${m.role === "user" ? "user-message" : "bot-message"
+                                }`}
                         >
-                            <FontAwesomeIcon icon={faCopy} size="lg" />
-                        </button>
-                    </div>
-                ))}
+                            <div className="message-body">
+                                <ReactMarkdown
+                                    remarkPlugins={[remarkGfm]}
+                                    components={{
+                                        p: ({ children, className }) => (
+                                            <p className={`message-text ${className ?? ""}`}>
+                                                {children}
+                                            </p>
+                                        ),
+                                        strong: ({ children, className }) => (
+                                            <strong
+                                                className={`font-semibold ${className ?? ""}`}
+                                            >
+                                                {children}
+                                            </strong>
+                                        ),
+                                        ol: ({ children, className }) => (
+                                            <ol
+                                                className={`list-decimal ml-6 my-2 ${className ?? ""}`}
+                                            >
+                                                {children}
+                                            </ol>
+                                        ),
+                                        ul: ({ children, className }) => (
+                                            <ul
+                                                className={`list-disc ml-6 my-2 ${className ?? ""}`}
+                                            >
+                                                {children}
+                                            </ul>
+                                        ),
+                                        li: ({ children, className }) => (
+                                            <li className={`my-1 ${className ?? ""}`}>
+                                                {children}
+                                            </li>
+                                        ),
+                                        code: ({ inline, children, className }) =>
+                                            inline ? (
+                                                <code
+                                                    className={`px-1 rounded bg-gray-100 ${className ?? ""}`}
+                                                >
+                                                    {children}
+                                                </code>
+                                            ) : (
+                                                <pre className="p-3 rounded bg-gray-100 overflow-auto">
+                                                    <code className={className}>{children}</code>
+                                                </pre>
+                                            ),
+                                        blockquote: ({ children, className }) => (
+                                            <blockquote
+                                                className={`border-l-4 pl-3 text-gray-700 italic ${className ?? ""}`}
+                                            >
+                                                {children}
+                                            </blockquote>
+                                        ),
+                                    }}
+                                >
+                                    {sanitize(enhance(m.text))}
+                                </ReactMarkdown>
+                            </div>
+
+                            <button
+                                className={`message-button ${m.role === "user" ? "user" : "bot"
+                                    }`}
+                                onClick={() => navigator.clipboard.writeText(m.text ?? "")}
+                                title="คัดลอกข้อความ"
+                            >
+                                <FontAwesomeIcon icon={faCopy} size="lg" />
+                            </button>
+                        </div>
+                    ))}
+                </div>
             </div>
+
+            {clearComfirm && (
+                <div className="confirm-window">
+                    <button onClick={handleConfirmClearHistory}>Yes</button>
+                    <button onClick={() => setClearConfirm(false)}>Cancel</button>
+                </div>
+            )}
 
             <div className="chat-footer">
                 <form className="chat-form" onSubmit={handleSubmit}>
                     <input
                         type="text"
-                        placeholder={status === "loading" ? "Please waiting for response." : "Enter your question here."}
+                        placeholder={
+                            status === "loading"
+                                ? "Please wait for response..."
+                                : "Enter your question here."
+                        }
                         className="message-input"
                         value={userMessage}
                         onChange={(e) => setUserMessage(e.target.value)}

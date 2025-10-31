@@ -86,7 +86,7 @@
 
 .output-container .status {
     position: sticky;
-    width: 70%;
+    /* width: 70%; */
     top: 0;
     left: 0;
     z-index: 1;

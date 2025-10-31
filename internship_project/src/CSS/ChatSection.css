@@ -67,7 +67,9 @@
 .history-box {
     background: var(--highlight-navbar-color);
     color: var(--font-color);
-    max-width: 25%;
+    min-width: 15%;
+    overflow-y: scroll;
+    position: relative;
 }
 
 .history-box ul {
@@ -75,12 +77,16 @@
     margin: 0 10px 0 10px;
     list-style: none;
     color: var(--font-color);
+    position: relative;
 }
 
 .history-box li {
     padding: 10px 15px 10px 15px;
     margin: 0 0 10px 0;
     color: var(--font-color);
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
 }
 
 .history-box li:hover {
@@ -95,9 +101,52 @@
     white-space: nowrap;
     border-radius: 10px;
     color: #fff;
-    background-color:var(--highlight-navbar-color);
+    background-color: var(--hover-highlight-navbar-color);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     transition: box-shadow 0.3s ease;
+}
+
+.new-chat-btn {
+    width: 100%;
+    max-width: 220px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background-color: var(--background);
+    color: var(--font-color);
+}
+
+.new-chat-btn:hover {
+    color: var(--font-color);
+    background: var(--highlight-button-color);
+}
+
+.selection-btn {
+    color: var(--font-color);
+    border: none;
+    background: none;
+    position: relative;
+}
+
+.selection-btn:hover {
+    cursor: pointer;
+    color: var(--highlight-button-color);
+}
+
+.selectionForm {
+    position: fixed;
+    left: 22%;
+    /* left: calc(15% + 10px);  */
+    border-radius: 20px;
+    z-index: 10;
+    background: var(--pop-up-background-color);
+}
+
+.selectionForm li {
+    color: var(--font-color);
+}
+
+.selectionForm li:hover {
+    background: var(--hover-pop-up-background-color);
 }
 
 .chat-body {
@@ -132,6 +181,15 @@
     word-wrap: break-word;
     white-space: pre-line;
     font-size: 0.95rem;
+    /* max-width: 50%; */
+}
+
+.user-message .message-body {
+    max-width: min(50%, 90vw);
+    width: fit-content;
+    height: auto;
+    overflow: hidden;
+    word-wrap: break-word;
 }
 
 .chat-body .user-message .message-text {

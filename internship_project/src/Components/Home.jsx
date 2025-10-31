@@ -40,12 +40,12 @@ const Home = () => {
                         >
                             OCR
                         </li>
-                        <li
+                        {/* <li
                             className={visibleSection === 'testing' ? 'selected' : ''}
                             onClick={() => setVisibleSection('testing')}
                         >
                             Testing Page
-                        </li>
+                        </li> */}
                     </ul>
                 </div>
 
@@ -58,9 +58,9 @@ const Home = () => {
                 <div className="section" id='section-2' style={{ display: visibleSection === 'ocr' ? 'block' : 'none' }}>
                     <OCRSection />
                 </div>
-                <div className="section" id='section-2' style={{ display: visibleSection === 'testing' ? 'block' : 'none' }}>
+                {/* <div className="section" id='section-2' style={{ display: visibleSection === 'testing' ? 'block' : 'none' }}>
                     <Testing />
-                </div>
+                </div> */}
             </div>
         </div>
     )

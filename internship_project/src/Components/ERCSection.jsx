@@ -5,7 +5,8 @@ import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import FileDocument from './icons/FileDocument';
 import DownloadIcon from './icons/DownloadIcon';
 
-const WEBHOOK_URL = "http://localhost:5678/webhook/ERC"
+const WEBHOOK_URL = "http://localhost:5678/webhook-test/ERC"
+const ROOT_URL = `http://localhost:5678/webhook/download?path=`
 
 const ERCSection = () => {
     const [searchText, setSearchText] = useState('')
@@ -41,7 +42,7 @@ const ERCSection = () => {
                     path: item.directory,
                     name: item.fileName,
                     size: item.fileSize,
-                    status: item.found ? "พบไฟล์" : "ไม่พบไฟล์",
+                    status: item.found,
                     seq: item.meeting_seq,
                     summary: Array.isArray(item.summaries) ? item.summaries.join("\n\n") : ""
                 }))
@@ -56,7 +57,7 @@ const ERCSection = () => {
 
     const handleDownloadClick = (filePath, fileName) => {
         if (!filePath) return;
-        const rootUrl = `http://localhost:5678/webhook/download?path=`
+        const rootUrl = ROOT_URL
         const url = `${rootUrl}${encodeURIComponent(filePath)}/${fileName}`;
         const a = document.createElement("a");
         a.href = url;

@@ -52,6 +52,8 @@ const ChatSection = () => {
     const [openFormId, setOpenFormId] = useState(null);
     const chatBodyRef = useRef(null);
     const historyButtonRef = useRef(null)
+    const [editingId, setEditingId] = useState(null);
+    const [draftTitle, setDraftTitle] = useState("");
 
     useEffect(() => {
         const el = chatBodyRef.current;
@@ -109,15 +111,23 @@ const ChatSection = () => {
 
         setConversations((prev) =>
             prev.map((conv) => {
-                if (conv.id !== activeId) return conv;
-                return {
-                    ...conv,
-                    messages: [
-                        ...conv.messages,
-                        { id: userId, role: "user", text },
-                        { id: loadingId, role: "bot", text: `thinking with ${model}...` },
-                    ],
-                };
+                if (conv.id === activeId) {
+                    const isFirstUserMsg = conv.messages.filter((m) => m.role === "user").length === 0;
+                    return {
+                        ...conv,
+                        title: isFirstUserMsg
+                            ? text.length > 40
+                                ? text.slice(0, 40) + "..."
+                                : text
+                            : conv.title,
+                        messages: [
+                            ...conv.messages,
+                            { id: Date.now() - 1, role: "user", text },
+                            { id: loadingId, role: "bot", text: `thinking with ${model}...` },
+                        ],
+                    };
+                }
+                return conv;
             })
         );
 
@@ -173,17 +183,39 @@ const ChatSection = () => {
 
     const enhance = (md = "") => md.replace(/\*\*มติ:\*\*/g, "**มติ:**");
     const sanitize = (md = "") => DOMPurify.sanitize(md);
+    const sanitizeTitle = (t) => {
+        const s = (t ?? "").trim();
+        return s.length ? (s.length > 60 ? s.slice(0, 60) + "…" : s) : "new chat";
+    };
 
     const createNewChat = () => {
         const newChat = {
             id: "c" + makeId(),
-            title: "Testing",
+            title: "new chat",
             messages: [
                 { id: makeId(), role: "bot", text: "Hello. Can I help you?" },
             ],
         };
         setConversations((prev) => [newChat, ...prev]);
         setActiveId(newChat.id);
+    };
+
+    const startRename = (id, currentTitle = "") => {
+        setEditingId(id);
+        setDraftTitle(currentTitle);
+        setOpenFormId(null);
+    };
+
+    const saveRename = () => {
+        setConversations(prev =>
+            prev.map(c => (c.id === editingId ? { ...c, title: sanitizeTitle(draftTitle) } : c))
+        );
+        setEditingId(null);
+    };
+
+    const cancelRename = () => {
+        setEditingId(null);
+        setDraftTitle("");
     };
 
     return (
@@ -226,31 +258,60 @@ const ChatSection = () => {
                             <li
                                 key={conv.id}
                                 className={conv.id === activeId ? "active selected" : ""}
-                                onClick={() => setActiveId(conv.id)}>
-                                <span>{conv.title}</span>
+                                onClick={() => setActiveId(conv.id)}
+                            >
+                                {/* ชื่อแชท: โหมดดู / โหมดแก้ */}
+                                {editingId === conv.id ? (
+                                    <input
+                                        className="rename-input"
+                                        value={draftTitle}
+                                        autoFocus
+                                        onClick={(e) => e.stopPropagation()}
+                                        onChange={(e) => setDraftTitle(e.target.value)}
+                                        onBlur={saveRename}
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter") saveRename();
+                                            if (e.key === "Escape") cancelRename();
+                                        }}
+                                        placeholder="ตั้งชื่อแชท…"
+                                    />
+                                ) : (
+                                    <span>{conv.title}</span>
+                                )}
+
                                 <button
                                     className="selection-btn"
-                                    onClick={() => setOpenFormId(prev => prev === conv.id ? null : conv.id)}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setOpenFormId(prev => (prev === conv.id ? null : conv.id));
+                                    }}
+                                    title="More actions"
                                 >
                                     <FontAwesomeIcon icon={faEllipsis} />
                                 </button>
+
                                 {openFormId === conv.id && (
                                     <div
                                         ref={historyButtonRef}
                                         className="selectionForm"
+                                        onClick={(e) => e.stopPropagation()}
                                     >
-                                        <li
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setConversations((prev) => prev.filter((c) => c.id !== conv.id));
-                                                if (conv.id === activeId && conversations.length > 1) {
-                                                    setActiveId(conversations[0].id);
-                                                }
-                                            }}
-                                        >Delete Chat</li>
-                                        <li
-                                            onClick={() => { setOpenFormId(null) }}
-                                        >Do nothing</li>
+                                        <ul>
+                                            <li onClick={() => startRename(conv.id, conv.title)}>Rename</li>
+                                            <li
+                                                onClick={() => {
+                                                    setConversations(prev => prev.filter(c => c.id !== conv.id));
+                                                    if (conv.id === activeId) {
+                                                        const next = conversations.find(c => c.id !== conv.id);
+                                                        if (next) setActiveId(next.id);
+                                                    }
+                                                    setOpenFormId(null);
+                                                }}
+                                            >
+                                                Delete Chat
+                                            </li>
+                                            <li onClick={() => setOpenFormId(null)}>Cancel</li>
+                                        </ul>
                                     </div>
                                 )}
                             </li>
@@ -302,13 +363,9 @@ const ChatSection = () => {
                                         ),
                                         code: ({ inline, children, className }) =>
                                             inline ? (
-                                                <code
-                                                    className={`px-1 rounded bg-gray-100 ${className ?? ""}`}
-                                                >
-                                                    {children}
-                                                </code>
+                                                <code className={`px-1 rounded bg-gray-100 inline-code ${className ?? ""}`}>{children}</code>
                                             ) : (
-                                                <pre className="p-3 rounded bg-gray-100 overflow-auto">
+                                                <pre className="p-3 rounded bg-gray-100 overflow-auto message-pre">
                                                     <code className={className}>{children}</code>
                                                 </pre>
                                             ),

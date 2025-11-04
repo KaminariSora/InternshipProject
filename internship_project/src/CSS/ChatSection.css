@@ -68,6 +68,7 @@
     background: var(--highlight-navbar-color);
     color: var(--font-color);
     min-width: 15%;
+    max-width: 15%;
     overflow-y: scroll;
     position: relative;
 }
@@ -104,6 +105,13 @@
     background-color: var(--hover-highlight-navbar-color);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     transition: box-shadow 0.3s ease;
+}
+
+.history-box li span {
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: pre;
 }
 
 .new-chat-btn {
@@ -212,6 +220,20 @@
     padding: 10px 12px;
     border-radius: 13px 13px 13px 3px;
 }
+
+.message-pre {
+  max-width: 100%;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  overflow-x: auto;
+}
+
+.inline-code {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 
 /* ---------- Footer zone ---------- */
 

@@ -81,7 +81,7 @@
 
 .ocr-result {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     grid-template-rows: 5% auto;
     gap: 10px;
     width: 100%;
@@ -89,7 +89,7 @@
     padding: 10px;
     background-color: #1e1e1e;
     min-height: 0;
-    /* overflow: hidden; */
+    overflow: scroll;
 }
 
 .ocr-scroll-area {
@@ -130,6 +130,7 @@
 
 .ocr-result .extract-ocr {
     border-radius: 8px;
+    width: 100%;
 }
 
 .ocr-result .extract-ocr h1 {
@@ -140,6 +141,7 @@
 .ocr-result .extract-ocr pre {
     white-space: pre-wrap;
     word-wrap: break-word;
+    overflow: auto;
     background-color: var(--font-color);
     border-radius: 8px;
     line-height: 1.5;

@@ -397,8 +397,11 @@ const ChatSection = () => {
 
             {clearComfirm && (
                 <div className="confirm-window">
-                    <button onClick={handleConfirmClearHistory}>Yes</button>
-                    <button onClick={() => setClearConfirm(false)}>Cancel</button>
+                    <h1>Are you sure? </h1>
+                    <div>
+                        <button onClick={handleConfirmClearHistory}>Yes</button>
+                        <button onClick={() => setClearConfirm(false)}>Cancel</button>
+                    </div>
                 </div>
             )}
 

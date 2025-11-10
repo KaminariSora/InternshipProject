@@ -7,7 +7,8 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import DOMPurify from "dompurify";
 
-const LOCAL_WEBHOOK_URL = "http://localhost:5678/webhook/ReactChat";
+const LOCAL_WEBHOOK_URL = "https://76c45653f311.ngrok-free.app/webhook/ReactChat";
+// const LOCAL_WEBHOOK_URL = "http://localhost:5678/webhook-test/ReactChat";
 const STORAGE_KEY = "chat_conversations_v1";
 
 const MODELS = [
@@ -106,81 +107,86 @@ const ChatSection = () => {
         setError("");
         setUserMessage("");
 
-        const userId = makeId();
         const loadingId = makeId();
 
+        // ดึงห้องปัจจุบัน + sessionId เดิม (หรือสร้างใหม่แล้วผูกกลับเข้า state)
+        const current = conversations.find((c) => c.id === activeId);
+        let sessionId = current?.sessionId;
+        if (!sessionId) {
+            sessionId = "s" + makeId();
+            setConversations((prev) =>
+                prev.map((c) => (c.id === activeId ? { ...c, sessionId } : c))
+            );
+        }
+
+        // render ข้อความ user + บับเบิลกำลังคิด
         setConversations((prev) =>
             prev.map((conv) => {
-                if (conv.id === activeId) {
-                    const isFirstUserMsg = conv.messages.filter((m) => m.role === "user").length === 0;
-                    return {
-                        ...conv,
-                        title: isFirstUserMsg
-                            ? text.length > 40
-                                ? text.slice(0, 40) + "..."
-                                : text
-                            : conv.title,
-                        messages: [
-                            ...conv.messages,
-                            { id: Date.now() - 1, role: "user", text },
-                            { id: loadingId, role: "bot", text: `thinking with ${model}...` },
-                        ],
-                    };
-                }
-                return conv;
+                if (conv.id !== activeId) return conv;
+                const isFirstUserMsg = conv.messages.every((m) => m.role !== "user");
+                return {
+                    ...conv,
+                    title: isFirstUserMsg
+                        ? text.length > 40
+                            ? text.slice(0, 40) + "..."
+                            : text
+                        : conv.title,
+                    messages: [
+                        ...conv.messages,
+                        { id: Date.now() - 1, role: "user", text },
+                        { id: loadingId, role: "bot", text: `thinking with ${model}...` },
+                    ],
+                };
             })
         );
 
         try {
+            // ส่งไป n8n โดยแนบ sessionId ของห้อง
             const r = await fetch(LOCAL_WEBHOOK_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ text, model }),
+                body: JSON.stringify({ text, model, sessionId }), // << สำคัญ!
             });
 
             const ctype = r.headers.get("content-type") || "";
-            let data;
-            if (ctype.includes("application/json")) data = await r.json();
-            else data = { message: await r.text() };
-
+            const data = ctype.includes("application/json") ? await r.json() : { message: await r.text() };
             if (!r.ok) throw new Error(data?.message || `HTTP ${r.status}`);
 
-            const reply =
-                data?.message ?? data?.answer ?? data?.output ?? JSON.stringify(data);
+            const reply = data?.message ?? data?.answer ?? data?.output ?? JSON.stringify(data);
 
             setConversations((prev) =>
-                prev.map((conv) => {
-                    if (conv.id !== activeId) return conv;
-                    return {
-                        ...conv,
-                        messages: conv.messages.map((m) =>
-                            m.id === loadingId ? { ...m, text: String(reply) } : m
-                        ),
-                    };
-                })
+                prev.map((conv) =>
+                    conv.id === activeId
+                        ? {
+                            ...conv,
+                            messages: conv.messages.map((m) =>
+                                m.id === loadingId ? { ...m, text: String(reply) } : m
+                            ),
+                        }
+                        : conv
+                )
             );
-
             setStatus("success");
         } catch (err) {
             const msg = err?.message || "Unknown error";
             setError(msg);
             setConversations((prev) =>
-                prev.map((conv) => {
-                    if (conv.id !== activeId) return conv;
-                    return {
-                        ...conv,
-                        messages: conv.messages.map((m) =>
-                            m.id === loadingId
-                                ? { ...m, text: `ขอโทษนะ มีปัญหา: ${msg}` }
-                                : m
-                        ),
-                    };
-                })
+                prev.map((conv) =>
+                    conv.id === activeId
+                        ? {
+                            ...conv,
+                            messages: conv.messages.map((m) =>
+                                m.id === loadingId ? { ...m, text: `ขอโทษนะ มีปัญหา: ${msg}` } : m
+                            ),
+                        }
+                        : conv
+                )
             );
             setStatus("error");
         }
     };
 
+    // (ของเดิม)
     const enhance = (md = "") => md.replace(/\*\*มติ:\*\*/g, "**มติ:**");
     const sanitize = (md = "") => DOMPurify.sanitize(md);
     const sanitizeTitle = (t) => {
@@ -191,10 +197,9 @@ const ChatSection = () => {
     const createNewChat = () => {
         const newChat = {
             id: "c" + makeId(),
+            sessionId: "s" + makeId(),
             title: "new chat",
-            messages: [
-                { id: makeId(), role: "bot", text: "Hello. Can I help you?" },
-            ],
+            messages: [{ id: makeId(), role: "bot", text: "Hello. Can I help you?" }],
         };
         setConversations((prev) => [newChat, ...prev]);
         setActiveId(newChat.id);

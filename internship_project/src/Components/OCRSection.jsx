@@ -2,7 +2,8 @@ import "../CSS/OCRSection.css";
 import FileDocument from "./icons/FileDocument";
 import { useEffect, useRef, useState } from "react";
 
-const WEBHOOK_URL = "http://localhost:5678/webhook/OCR";
+const WEBHOOK_URL = "https://76c45653f311.ngrok-free.app/webhook/OCR";
+// const WEBHOOK_URL = "http://localhost:5678/webhook/OCR";
 const MAX_SIZE = 25 * 1024 * 1024;
 
 export default function OCRSection() {

@@ -141,11 +141,10 @@ const ChatSection = () => {
         );
 
         try {
-            // ส่งไป n8n โดยแนบ sessionId ของห้อง
             const r = await fetch(LOCAL_WEBHOOK_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ text, model, sessionId }), // << สำคัญ!
+                body: JSON.stringify({ text, model, sessionId }),
             });
 
             const ctype = r.headers.get("content-type") || "";

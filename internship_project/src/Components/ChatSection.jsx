@@ -7,8 +7,8 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import DOMPurify from "dompurify";
 
-const LOCAL_WEBHOOK_URL = "https://76c45653f311.ngrok-free.app/webhook/ReactChat";
-// const LOCAL_WEBHOOK_URL = "http://localhost:5678/webhook-test/ReactChat";
+// const LOCAL_WEBHOOK_URL = "https://76c45653f311.ngrok-free.app/webhook/ReactChat";
+const LOCAL_WEBHOOK_URL = "http://localhost:5678/webhook/ReactChat";
 const STORAGE_KEY = "chat_conversations_v1";
 
 const MODELS = [

@@ -5,8 +5,8 @@ import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import FileDocument from './icons/FileDocument';
 import DownloadIcon from './icons/DownloadIcon';
 
-const WEBHOOK_URL = "https://76c45653f311.ngrok-free.app/webhook/ERC"
-// const WEBHOOK_URL = "http://localhost:5678/webhook/ERC"
+// const WEBHOOK_URL = "https://76c45653f311.ngrok-free.app/webhook/ERC"
+const WEBHOOK_URL = "http://localhost:5678/webhook/ERC"
 const ROOT_URL = `http://localhost:5678/webhook/download?path=`
 
 const ERCSection = () => {

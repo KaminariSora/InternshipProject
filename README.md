@@ -19,7 +19,7 @@ _Web application for meeting resolution_
 
 ### 🏠 Q&A Chatbot
 <p align="center">
-  image here
+  <img width="960" height="540" alt="Screenshot 2025-12-04 140804" src="https://github.com/user-attachments/assets/a5ee1196-b893-4535-a61d-69cdcdffe398" />
 </p>
 **Features**
 - แชทบอทค้นหาข้อมูลสรุปการประชุม
@@ -30,7 +30,7 @@ _Web application for meeting resolution_
 
 ### ⚖️ ERC Document Search
 <p align="center">
-  image here
+  <img width="960" height="540" alt="Screenshot 2026-01-09 162205" src="https://github.com/user-attachments/assets/7916c446-e465-4b3c-acbc-50df89383305" />
 </p>
 
 **Features**
@@ -42,7 +42,7 @@ _Web application for meeting resolution_
 
 ### 🥗 OCR
 <p align="center">
-  image Here
+  <img width="960" height="540" alt="Screenshot 2025-10-29 152136" src="https://github.com/user-attachments/assets/69c8b1d4-4c72-4976-9afd-5412461feaf2" />
 </p>
 
 **Features**
